@@ -12,7 +12,7 @@ require 'shoulda'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'nifty-cloud-restful-read-api'
+require 'niftycloud-restful-read-api'
 
 class Test::Unit::TestCase
 end
