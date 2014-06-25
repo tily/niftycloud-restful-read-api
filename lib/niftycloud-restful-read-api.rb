@@ -126,6 +126,23 @@ class NiftycloudRestfulReadApi < Sinatra::Base
       #  [response.DescribeOrderableDBInstanceOptionsResult.OrderableDBInstanceOptions.OrderableDBInstanceOption.to_a].flatten rescue []
       #end
     end
+
+    class Mq
+      def initialize(options)
+        @api = NIFTY::Cloud::Base.new(
+          :access_key => options[:access_key_id],
+          :secret_key => options[:secret_access_key],
+          :server => "mq.jp-#{options[:region]}.api.cloud.nifty.com",
+          :path => '/'
+        )
+      end
+  
+      # TODO: GetQueueAttributes
+      def queues
+        response = @api.send(:response_generator, 'Action' => 'ListQueues')
+        [response.ListQueuesResult.QueueUrl].flatten.map {|queue_url| {'QueueUrl' => queue_url} } rescue []
+      end
+    end
   end
   
   helpers do
@@ -139,6 +156,14 @@ class NiftycloudRestfulReadApi < Sinatra::Base
 
     def rdb
       @rdb ||= NiftyCloud::Rdb.new(
+        :region => @region,
+        :access_key_id => @access_key_id,
+        :secret_access_key => @secret_access_key
+      )
+    end
+
+    def mq
+      @rdb ||= NiftyCloud::Mq.new(
         :region => @region,
         :access_key_id => @access_key_id,
         :secret_access_key => @secret_access_key
@@ -160,5 +185,10 @@ class NiftycloudRestfulReadApi < Sinatra::Base
   post '/rdb/:resources' do
     NIFTY::VERSION = '2013-05-15N2013-12-16'
     rdb.send(params[:resources]).to_json
+  end
+
+  post '/mq/:resources' do
+    NIFTY::VERSION = '2012-11-05N2013-12-16'
+    mq.send(params[:resources]).to_json
   end
 end
