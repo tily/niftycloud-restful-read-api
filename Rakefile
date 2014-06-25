@@ -21,6 +21,7 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{TODO: longer description of your gem}
   gem.email = "tily05@gmail.com"
   gem.authors = ["tily"]
+  gem.executables = ['niftycloud-restful-read-api']
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
