@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "niftycloud-restful-read-api"
   gem.homepage = "http://github.com/tily/niftycloud-restful-read-api"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{NIFTYCloud の情報取得系 API を RESTful に利用できるようにする Sinatra アプリ}
+  gem.description = %Q{NIFTYCloud の情報取得系 API を RESTful に利用できるようにする Sinatra アプリ}
   gem.email = "tily05@gmail.com"
   gem.authors = ["tily"]
   gem.executables = ['niftycloud-restful-read-api']
