@@ -2,7 +2,7 @@ require 'sinatra'
 require 'json'
 require 'NIFTY'
 
-class NiftyCloudRestfulReadApi < Sinatra::Base
+class NiftycloudRestfulReadApi < Sinatra::Base
   class NiftyCloud
     class Computing
   
