@@ -78,9 +78,22 @@ config.ru から require して使うこともできます。
 * /computing/addresses
   * 付替アドレス一覧を取得できます
 
+### RDB
+
+* /rdb/db_instances
+  * DB サーバー一覧を取得できます
+* /rdb/db_security_groups
+  * DB ファイアウォール一覧を取得できます
+* /rdb/db_parameter_groups
+  * DB パラメーターグループ一覧を取得できます
+* /rdb/db_snapshots
+  * DB スナップショット一覧を取得できます
+* /rdb/db_engine_versions
+  * DB エンジンバージョン一覧を取得できます
+
 ## TODO
 
-* ニフティクラウド RDB/MQ/ESS/DNS/Automation
+* ニフティクラウド MQ/ESS/DNS/Automation
 
 ## ライセンス
 
