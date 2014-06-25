@@ -4,6 +4,10 @@
 
 ニフティクラウドの情報取得系 API を REST っぽく取得できるようにする Sinatra アプリです。
 
+## インストール
+
+        gem install niftycloud-restful-read-api
+
 ## 使い方
 
 ### コマンドライン
