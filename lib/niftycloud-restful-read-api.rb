@@ -65,7 +65,6 @@ class NiftycloudRestfulReadApi < Sinatra::Base
       def ssl_certificates
         response = @api.describe_ssl_certificates
         response.certsSet.item.to_a rescue []
-        []
       end
   
       def addresses
