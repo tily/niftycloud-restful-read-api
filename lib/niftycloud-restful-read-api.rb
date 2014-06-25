@@ -114,16 +114,6 @@ class NiftycloudRestfulReadApi < Sinatra::Base
         [response.DescribeDBSnapshotsResult.DBSnapshots.DBSnapshot.to_a].flatten rescue []
       end
 
-      def db_snapshots
-        response = @api.send(:response_generator, 'Action' => 'DescribeDBSnapshots')
-        [response.DescribeDBSnapshotsResult.DBSnapshots.DBSnapshot.to_a].flatten rescue []
-      end
-
-      def db_engine_versions
-        response = @api.send(:response_generator, 'Action' => 'DescribeDBEngineVersions')
-        [response.DescribeDBEngineVersionsResult.DBEngineVersions.DBEngineVersion.to_a].flatten rescue []
-      end
-
       def db_engine_versions
         response = @api.send(:response_generator, 'Action' => 'DescribeDBEngineVersions')
         [response.DescribeDBEngineVersionsResult.DBEngineVersions.DBEngineVersion.to_a].flatten rescue []
