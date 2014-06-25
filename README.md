@@ -91,6 +91,11 @@ config.ru から require して使うこともできます。
 * /rdb/db_engine_versions
   * DB エンジンバージョン一覧を取得できます
 
+### MessageQueue
+
+* /mq/queues
+  * キュー一覧を取得できます
+
 ## TODO
 
 * ニフティクラウド MQ/ESS/DNS/Automation
