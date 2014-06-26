@@ -95,35 +95,34 @@ class NiftycloudRestfulReadApi < Sinatra::Base
   
       def db_instances
         response = @api.send(:response_generator, 'Action' => 'DescribeDBInstances')
-        [response.DescribeDBInstancesResult.DBInstances.DBInstance.to_a].flatten rescue []
+        [response.DescribeDBInstancesResult.DBInstances.DBInstance].flatten rescue []
       end
 
       def db_security_groups
         response = @api.send(:response_generator, 'Action' => 'DescribeDBSecurityGroups')
-        [response.DescribeDBSecurityGroupsResult.DBSecurityGroups.DBSecurityGroup.to_a].flatten rescue []
+        [response.DescribeDBSecurityGroupsResult.DBSecurityGroups.DBSecurityGroup].flatten rescue []
       end
 
       def db_parameter_groups
         response = @api.send(:response_generator, 'Action' => 'DescribeDBParameterGroups')
-        [response.DescribeDBParameterGroupsResult.DBParameterGroups.DBParameterGroup.to_a].flatten rescue []
+        [response.DescribeDBParameterGroupsResult.DBParameterGroups.DBParameterGroup].flatten rescue []
       end
 
       def db_snapshots
         response = @api.send(:response_generator, 'Action' => 'DescribeDBSnapshots')
-        p response
-        [response.DescribeDBSnapshotsResult.DBSnapshots.DBSnapshot.to_a].flatten rescue []
+        [response.DescribeDBSnapshotsResult.DBSnapshots.DBSnapshot].flatten rescue []
       end
 
       def db_engine_versions
         response = @api.send(:response_generator, 'Action' => 'DescribeDBEngineVersions')
-        [response.DescribeDBEngineVersionsResult.DBEngineVersions.DBEngineVersion.to_a].flatten rescue []
+        [response.DescribeDBEngineVersionsResult.DBEngineVersions.DBEngineVersion].flatten rescue []
       end
 
       # TODO: Engine
       #def orderable_db_instance_options
       #  response = @api.send(:response_generator, 'Action' => 'DescribeOrderableDBInstanceOptions')
       #  p response
-      #  [response.DescribeOrderableDBInstanceOptionsResult.OrderableDBInstanceOptions.OrderableDBInstanceOption.to_a].flatten rescue []
+      #  [response.DescribeOrderableDBInstanceOptionsResult.OrderableDBInstanceOptions.OrderableDBInstanceOption].flatten rescue []
       #end
     end
 
