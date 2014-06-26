@@ -20,7 +20,7 @@ class NiftycloudRestfulReadApi < Sinatra::Base
         @api = NIFTY::Cloud::Base.new(
           :access_key => options[:access_key_id],
           :secret_key => options[:secret_access_key],
-          :server => "{options[:region]}.cp.cloud.nifty.com",
+          :server => "#{options[:region]}.cp.cloud.nifty.com",
           :path => '/api'
         )
       end
