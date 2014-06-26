@@ -12,3 +12,4 @@ end
 
 gem 'sinatra'
 gem 'nifty-cloud-sdk'
+gem 'aws-sdk'

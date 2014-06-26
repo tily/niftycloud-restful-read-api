@@ -1,7 +1,13 @@
 require 'logger'
+require 'openssl'
+require 'base64'
+require 'time'
+
+require 'httparty'
 require 'sinatra'
 require 'json'
 require 'NIFTY'
+require 'aws-sdk'
 
 NIFTY::LOG.level = Logger::DEBUG
 
@@ -15,6 +21,7 @@ end
 class NiftycloudRestfulReadApi < Sinatra::Base
   class NiftyCloud
     class Computing
+      VERSION = '1.18'
   
       def initialize(options)
         @api = NIFTY::Cloud::Base.new(
@@ -84,6 +91,8 @@ class NiftycloudRestfulReadApi < Sinatra::Base
     end
 
     class Rdb
+      VERSION = '2013-05-15N2013-12-16'
+
       def initialize(options)
         @api = NIFTY::Cloud::Base.new(
           :access_key => options[:access_key_id],
@@ -127,6 +136,8 @@ class NiftycloudRestfulReadApi < Sinatra::Base
     end
 
     class Mq
+      VERSION = '2012-11-05N2013-12-16'
+
       def initialize(options)
         @api = NIFTY::Cloud::Base.new(
           :access_key => options[:access_key_id],
@@ -142,27 +153,95 @@ class NiftycloudRestfulReadApi < Sinatra::Base
         [response.ListQueuesResult.QueueUrl].flatten.map {|queue_url| {'QueueUrl' => queue_url} } rescue []
       end
     end
+    
+    class Dns
+      include HTTParty
+      $debug_output = true
+      base_uri 'https://dns.api.cloud.nifty.com'
+
+      VERSION = '2012-12-12N2013-12-16'
+
+      def initialize(options)
+        @access_key_id = options[:access_key_id]
+        @secret_access_key = options[:secret_access_key]
+      end
+    
+      def zones
+        @date = Time.now.rfc2822.gsub(/(\-|\+)\d{4}$/, 'GMT')
+        response = self.class.get("/#{Dns::VERSION}/hostedzone", :headers => headers)
+        [response['ListHostedZonesResponse']['HostedZones']['HostedZone']].flatten rescue []
+      end
+
+      def headers
+        {
+          'x-nifty-authorization' => "NIFTY3-HTTPS NIFTYAccessKeyId=#{@access_key_id},ALgorithm=HmacSHA256,Signature=#{signature}", 
+          'x-nifty-date' => @date
+        }
+      end
+
+      def signature
+        signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha256'), @secret_access_key, @date)).strip
+      end
+    end
+
+    class Storage
+      include HTTParty
+      $debug_output = true
+
+      VERSION = '0'
+
+      def initialize(options)
+        @access_key_id = options[:access_key_id]
+        @secret_access_key = options[:secret_access_key]
+        if options[:region] == 'east-1'
+          self.class.base_uri "https://ncss.nifty.com"
+        else
+          self.class.base_uri "https://#{options[:region]}-ncss.nifty.com"
+        end
+      end
+    
+      def buckets
+        @date = Time.now.rfc2822.gsub(/(\-|\+)\d{4}$/, 'GMT')
+        response = self.class.get("/", :headers => headers)
+        [response['ListAllMyBucketsResult']['Buckets']['Bucket']].flatten rescue []
+      end
+
+      def headers
+        {
+          'authorization' => "NIFTY #{@access_key_id}:#{signature}", 
+          'date' => @date,
+          'content-type' => 'text/plain'
+        }
+      end
+
+      def signature
+        signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('sha1'), @secret_access_key, string_to_sign)).strip
+      end
+
+      def string_to_sign
+        str = []
+        str << 'GET'
+        str << ''
+        str << 'text/plain'
+        str << @date
+        str << '/'
+        str.join("\n")
+      end
+    end
   end
   
   helpers do
-    def compute
-      @compute ||= NiftyCloud::Computing.new(
-        :region => @region,
-        :access_key_id => @access_key_id,
-        :secret_access_key => @secret_access_key
-      )
-    end
+    SERVICE_CLASS = {
+      :computing => NiftyCloud::Computing,
+      :rdb       => NiftyCloud::Rdb,
+      :mq        => NiftyCloud::Mq,
+      :dns       => NiftyCloud::Dns,
+      :storage   => NiftyCloud::Storage
+    }
 
-    def rdb
-      @rdb ||= NiftyCloud::Rdb.new(
-        :region => @region,
-        :access_key_id => @access_key_id,
-        :secret_access_key => @secret_access_key
-      )
-    end
-
-    def mq
-      @rdb ||= NiftyCloud::Mq.new(
+    def service(service)
+      NIFTY::VERSION.gsub!(/^.+$/) { SERVICE_CLASS[service]::VERSION }
+      SERVICE_CLASS[service].new(
         :region => @region,
         :access_key_id => @access_key_id,
         :secret_access_key => @secret_access_key
@@ -177,17 +256,7 @@ class NiftycloudRestfulReadApi < Sinatra::Base
     @secret_access_key = params[:secret_access_key] || ENV['SECRET_ACCESS_KEY']
   end
   
-  post '/computing/:resources' do
-    compute.send(params[:resources]).to_json
-  end
-
-  post '/rdb/:resources' do
-    NIFTY::VERSION = '2013-05-15N2013-12-16'
-    rdb.send(params[:resources]).to_json
-  end
-
-  post '/mq/:resources' do
-    NIFTY::VERSION = '2012-11-05N2013-12-16'
-    mq.send(params[:resources]).to_json
+  get '/:service/:resources' do
+    service(params[:service].to_sym).send(params[:resources]).to_json
   end
 end
