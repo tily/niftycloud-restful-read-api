@@ -96,9 +96,19 @@ config.ru から require して使うこともできます。
 * /mq/queues
   * キュー一覧を取得できます
 
+### DNS
+
+* /dns/zones
+  * ゾーン一覧を取得できます
+
+### Storage
+
+* /storage/buckets
+  * バケット一覧を取得できます
+
 ## TODO
 
-* ニフティクラウド MQ/ESS/DNS/Automation
+* ニフティクラウド ESS/Automation
 
 ## ライセンス
 
