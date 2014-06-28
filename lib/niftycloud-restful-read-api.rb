@@ -31,18 +31,33 @@ class NiftycloudRestfulReadApi < Sinatra::Base
           :path => '/api'
         )
       end
-  
-      def regions
-        response = @api.send(:response_generator, 'Action' => 'DescribeRegions')
-        response.regionInfo.item.to_a rescue []
+
+      def items(options)
+        response = @api.send(:response_generator, 'Action' => options[:action])
+        response[options[:key]].item.to_a rescue []
       end
-      
+
+      {
+        :regions => {:action => 'DescribeRegions', :key => 'regionInfo'},
+        :volumes => {:action => 'DescribeVolumes', :key => 'volumeSet'}, 
+        :key_pairs => {:action => 'DescribeKeyPairs', :key => 'keySet'},
+        :images => {:action => 'DescribeImages', :key => 'imagesSet'},
+        :security_groups => {:action => 'DescribeSecurityGroups', :key => 'securityGroupInfo'},
+        :ssl_certificates => {:action => 'DescribeSSLCertificates', :key => 'certsSet'},
+        :addresses => {:action => 'DescribeAddresses', :key => 'addressesSet'}
+      }.each do |method, options|
+        define_method method do
+          items(:action => options[:action], :key => options[:key])
+        end
+      end
+
+      def load_balancers
+        response = @api.describe_load_balancers
+        response.DescribeLoadBalancersResult.LoadBalancerDescriptions.member.to_a rescue []
+      end
+  
       def instances
-        response = @api.describe_instances
-  
-        return [] if response.reservationSet.nil?
-  
-        items = response.reservationSet.item
+        items = items(:action => 'DescribeInstances', :key => 'reservationSet')
         instances = items.map do |item|
           security_groups = item.groupSet.item.flatten.map {|item| item.groupId }
           instances = item.instancesSet.item.to_a
@@ -52,41 +67,6 @@ class NiftycloudRestfulReadApi < Sinatra::Base
           instances
         end
         instances.flatten
-      end
-      
-      def volumes
-        response = @api.describe_volumes
-        response.volumeSet.item.to_a rescue []
-      end
-      
-      def key_pairs
-        response = @api.describe_key_pairs
-        response.keySet.item.to_a rescue []
-      end
-      
-      def images
-        response = @api.describe_images
-        response.imagesSet.item.to_a rescue []
-      end
-      
-      def load_balancers
-        response = @api.describe_load_balancers
-        response.DescribeLoadBalancersResult.LoadBalancerDescriptions.member.to_a rescue []
-      end
-      
-      def security_groups
-        response = @api.describe_security_groups
-        response.securityGroupInfo.item.to_a rescue []
-      end
-      
-      def ssl_certificates
-        response = @api.describe_ssl_certificates
-        response.certsSet.item.to_a rescue []
-      end
-  
-      def addresses
-        response = @api.send(:response_generator, 'Action' => 'DescribeAddresses')
-        response.addressesSet.item.to_a rescue []
       end
     end
 
