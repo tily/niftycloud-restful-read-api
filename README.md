@@ -61,6 +61,8 @@ config.ru から require して使うこともできます。
 
 * /computing/regions
   * リージョン一覧を取得できます
+* /computing/availability_zones
+  * 利用可能ゾーン一覧を取得できます
 * /computing/instances
   * サーバー一覧を取得できます
 * /computing/volumes
