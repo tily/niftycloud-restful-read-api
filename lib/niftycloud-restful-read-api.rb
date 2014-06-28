@@ -39,6 +39,7 @@ class NiftycloudRestfulReadApi < Sinatra::Base
 
       {
         :regions => {:action => 'DescribeRegions', :key => 'regionInfo'},
+        :availability_zones => {:action => 'DescribeAvailabilityZones', :key => 'availabilityZoneInfo'},
         :volumes => {:action => 'DescribeVolumes', :key => 'volumeSet'}, 
         :key_pairs => {:action => 'DescribeKeyPairs', :key => 'keySet'},
         :images => {:action => 'DescribeImages', :key => 'imagesSet'},
